@@ -148,6 +148,12 @@ namespace MinecraftClient.Protocol.Handlers
                         int numActions = readNextVarInt(ref packetData);
                         Guid uuid = readNextUUID(ref packetData);
                         switch (action)
+                    case 0x27: //Explosion
+                        float x = readNextFloat (ref packetData);
+                        float y = readNextFloat (ref packetData);
+                        float z = readNextFloat (ref packetData);
+                        ConsoleIO.WriteLineFormatted ("§cExplosion @ " + x + ", " + y + ", " + z);
+                        Console.Beep ();
                         {
                             case 0x00: //Player Join
                                 string name = readNextString(ref packetData);
@@ -272,6 +278,18 @@ namespace MinecraftClient.Protocol.Handlers
                 return Encoding.UTF8.GetString(readData(length, ref cache));
             }
             else return "";
+        }
+        
+        /// <summary>
+        /// Read a float from a cache of bytes and remove it from the cache
+        /// </summary>
+        /// <returns>The float value</returns>
+        
+        private static float readNextFloat(ref byte[] cache)
+        {
+            byte[] rawValue = readData(4, ref cache);
+            Array.Reverse(rawValue); //Endianness
+            return BitConverter.ToSingle(rawValue, 0);
         }
 
         /// <summary>
